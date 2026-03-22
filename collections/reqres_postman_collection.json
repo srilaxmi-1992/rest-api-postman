@@ -1,0 +1,361 @@
+{
+  "info": {
+    "_postman_id": "c00af84f-b789-4753-ab00-6c831cbb8107",
+    "name": "Reqres End-to-End API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "9172638"
+  },
+  "item": [
+    {
+      "name": "1. GET All Users",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let jsonData = pm.response.json();",
+              "",
+              "if (jsonData.data.length > 0) {",
+              "    // Save first user's ID to environment variable",
+              "    pm.environment.set(\"userId\", jsonData.data[0].id);",
+              "}",
+              "",
+              "pm.test(\"Status is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Page info exists",
+              "pm.test(\"Response has page info\", function () {",
+              "    pm.expect(jsonData).to.have.property(\"page\");",
+              "    pm.expect(jsonData).to.have.property(\"per_page\");",
+              "    pm.expect(jsonData).to.have.property(\"total\");",
+              "    pm.expect(jsonData).to.have.property(\"total_pages\");",
+              "});",
+              "",
+              "// Data array exists",
+              "pm.test(\"Response contains data array\", function () {",
+              "    pm.expect(jsonData).to.have.property(\"data\");",
+              "    pm.expect(jsonData.data).to.be.an(\"array\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "packages": {},
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "https://reqres.in/api/users?page=1",
+          "protocol": "https",
+          "host": [
+            "reqres",
+            "in"
+          ],
+          "path": [
+            "api",
+            "users"
+          ],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "2. CREATE User (Data File)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Save returned userId to environment for chaining",
+              "var jsonData = pm.response.json();",
+              "pm.environment.set(\"userId\", jsonData.id);",
+              "",
+              "pm.test(\"Created user status 201\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Response has id\", function () {",
+              "    pm.expect(jsonData.id).to.exist;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Get current row values from CSV\r",
+              "let name = pm.iterationData.get(\"name\");\r",
+              "let job = pm.iterationData.get(\"job\");\r",
+              "\r",
+              "// Set environment or local variables for request body\r",
+              "pm.environment.set(\"name\", name);\r",
+              "pm.environment.set(\"job\", job);\r",
+              "\r",
+              "// Optional: log for debugging\r",
+              "console.log(\"Current iteration name:\", name, \"job:\", job);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "3. GET Single User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "let jsonData = pm.response.json();",
+              "",
+              "pm.test(\"User object has required fields\", function () {",
+              "    pm.expect(jsonData.data).to.have.property(\"id\");",
+              "    pm.expect(jsonData.data).to.have.property(\"email\");",
+              "    pm.expect(jsonData.data).to.have.property(\"first_name\");",
+              "    pm.expect(jsonData.data).to.have.property(\"last_name\");",
+              "    pm.expect(jsonData.data).to.have.property(\"avatar\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/2",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "2"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "4. UPDATE User (PUT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Parse JSON response",
+              "let jsonData = pm.response.json();",
+              "",
+              "// 1️⃣ Status code check",
+              "pm.test(\"Status is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// 2️⃣ Response should include updated fields",
+              "pm.test(\"Response has updated name\", function () {",
+              "    pm.expect(jsonData.name).to.eql(\"Updated \"+pm.variables.get(\"name\"));",
+              "});",
+              "",
+              "pm.test(\"Response has updated job\", function () {",
+              "    pm.expect(jsonData.job).to.eql(\"Updated \"+pm.variables.get(\"job\"));",
+              "});",
+              "",
+              "// 3️⃣ Updated timestamp exists",
+              "pm.test(\"Response has updatedAt\", function () {",
+              "    pm.expect(jsonData).to.have.property(\"updatedAt\");",
+              "});",
+              "",
+              "// Optional: log response for debugging",
+              "console.log(\"PUT /users/{{userId}} response:\", jsonData);"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Updated {{name}}\",\"job\":\"Updated {{job}}\"}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "5. PATCH User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "x-api-key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"job\":\"Partially Updated {{job}}\"}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "6. DELETE User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status is 204 No Content\", function () {",
+              "    pm.response.to.have.status(204);",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "{{api_key}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

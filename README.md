@@ -19,7 +19,7 @@ This project demonstrates **end-to-end REST API testing** using
     ├── collection/
     │   └── reqres_postman_collection.json
     │
-    ├── environment/
+    ├── environments/
     │   └── reqres_environment.json
     │
     ├── data/
@@ -70,6 +70,7 @@ Sample:
 
 ### 5. API Coverage
 
+```bash
   Method   Endpoint        Description
   -------- --------------- -----------------
   GET      /users?page=1   Get all users
@@ -79,6 +80,7 @@ Sample:
   PATCH    /users/{id}     Partial update
   DELETE   /users/{id}     Delete user
 
+``` 
 ------------------------------------------------------------------------
 
 ## ▶️ Run in Postman
@@ -97,18 +99,20 @@ Sample:
     npm install -g newman
 
 ### Run
+```bash
 
-    newman run collection/reqres_postman_collection.json -e environment/reqres_environment.json
+    newman run collection/reqres_postman_collection.json -e environments/reqres_environment.json -d data/users.csv
 
-### With Data
-
-    newman run collection/reqres_postman_collection.json -e environment/reqres_environment.json -d data/users.csv
+``` 
 
 ### HTML Report
 
+```bash
+
     npm install -g newman-reporter-htmlextra
 
-    newman run collection/reqres_postman_collection.json -e environment/reqres_environment.json -d data/users.csv -r htmlextra
+    newman run collection/reqres_postman_collection.json -e environments/reqres_environment.json -d data/users.csv -r htmlextra
+```    
 
 ------------------------------------------------------------------------
 
